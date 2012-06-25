@@ -6,9 +6,26 @@ using System.Web.Mvc;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Json;
+using System.Web.Script.Serialization;
 
 namespace MvcMobile.Controllers
 {
+    public class Person
+    {
+
+        public string givenName { get; set; }
+        public string sn { get; set; }
+        public string cn { get; set; }
+        public string eduPersonPrincipalName { get; set; }
+    
+
+    }
+
+    public class personList
+    {
+        public List<Person> Person { get; set; }
+    }
+
     public class SearchController : AsyncController
     {
         public void IndexAsync(string fname="")
@@ -17,11 +34,11 @@ namespace MvcMobile.Controllers
             AsyncManager.OutstandingOperations.Increment();
 
 
-            AsyncManager.Parameters["headlines"] = "asdasd";
+            AsyncManager.Parameters["personlist"] = "na";
             AsyncManager.Parameters["search_terms"] = fname;
 
            
-            string line = "";
+           
             string _address = "http://netdevone.gsu.edu/directory/api/Person?givenName="+fname+"&sn=";
            
             HttpClient client = new HttpClient();
@@ -41,21 +58,20 @@ namespace MvcMobile.Controllers
                         (readTask) =>
                         {
 
-                            var country = readTask.Result[0];
-                           
-                               
-                            /*
-                                foreach (var country2 in country)
+                            var personresults = readTask.Result[0];
+                            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+
+                            foreach (var personresult in personresults)
                                 {
-                                   
-                                    line = line + "" + country2.Value[0]["cn"];
-
-                                    line = line + "" + country2.Value[0].Count;
+                                    if (personresult.Value.Count > 0)
+                                    {
+                                        dictionary.Add(personresult.Value[0]["cn"].ToString().Replace("\"", ""), personresult.Value[0]["eduPersonPrincipalName"].ToString().Replace("\"", "")); 
+                                    }
                                 }
-                            */
 
 
-                            AsyncManager.Parameters["headlines"] = country.ToString();
+
+                            AsyncManager.Parameters["personlist"] = dictionary;
                             AsyncManager.OutstandingOperations.Decrement();
                         });
                   
@@ -66,13 +82,12 @@ namespace MvcMobile.Controllers
 
         }
 
-        public ActionResult IndexCompleted(string headlines, string search_terms)
+        public ActionResult IndexCompleted(Dictionary<string, string> personlist, string search_terms)
         {
-
-            ViewBag.JSON = headlines;
+             ViewBag.JSON = personlist;
             ViewBag.search_terms = search_terms;
-           // return headlines;
-            return View();
+            ViewBag.pageid = "searchpage";
+           return View();
         }
     }
 }

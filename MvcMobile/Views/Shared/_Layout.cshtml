@@ -8,7 +8,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
-	<title>GSU Directory</title> 
+	<title>Campus Directory</title> 
 	        <link href="@System.Web.Optimization.BundleTable.Bundles.ResolveBundleUrl("~/Content/css")" rel="stylesheet" type="text/css" />
            <script src="@System.Web.Optimization.BundleTable.Bundles.ResolveBundleUrl("~/Scripts/js")"></script>
  
@@ -32,8 +32,8 @@ transform: rotateY(0deg);
 
 
         var delay = (function(){
-          var timer = 0;
-          return function(callback, ms){
+            var timer = 0;
+            return function(callback, ms){
             clearTimeout (timer);
             timer = setTimeout(callback, ms);
           };
@@ -47,18 +47,7 @@ transform: rotateY(0deg);
 	    $(document).ready(function () {
 	        $("input[id^='search']").keyup(function () { delay(function(){
                   ajaxsearch(); }, 500 );            
-             });
-            $('#searchform').submit(function() {
-                    //ajaxsearch();
-                    //$('#target').blur();
-                    document.searchform.criteria.value = $("#selectcriteria").val();
-                    $('#criteria').val( $("#selectcriteria").val());
-                    document.getElementById('criteria').value = $("#selectcriteria").val();
-                    document.forms["searchform"].submit();
-                      
-                     
-                   return false;
-            });
+             });           
 	    });
 
 
@@ -68,58 +57,15 @@ transform: rotateY(0deg);
 	    }
 
 
-	    $('#detailsPage').live('pagebeforeshow', function (event , data) {
-         //alert(event.currentTarget.dataset.url);
+	    $('#detailsPage').live('pagebeforeshow', function (event , data) {       
 	        var id = getUrlVar(event.currentTarget.dataset.url)["id"];
-             //var campusid = id;
-             //var id = getUrlVar()["id"];
-            //$('a').live('click', function(e) {
-             //  campusid = $(e.target).jqmData("campusid");               
-               // $.getJSON("http://netdevone.gsu.edu/directory/api/Person/" + campusid, displayEmployeeDetail);
-            //  }
-            // )
-         
-	       $.getJSON("http://netdevone.gsu.edu/directory/api/Person/"+id, displayEmployeeDetail);
+	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person/"+id, displayEmployeeDetail);
 	    });
 
 
 
-	    function displayEmployee(data) {
-	        var employee = data.item;
-	        //var source ="{#items}<li><a href='#two?id={id}'><h4>{firstName} {lastName}</h4><p>{title}</p><span class='ui-li-count'>{reportCount}</span></a></li>{/items}";
-	        // $("#actionListTemplate" ).tmpl( employee ).appendTo( "#actionList" );
-
-
-
-	        //var source ="{#items2}<li><a href='#detailsPage?id={id}' data-transition='slide'>{firstName} {lastName}</a></li>{/items2}";
-
-	        var source = "{?A}\n" +
-                "<li data-role='list-divider'>A</li>" +
-                "    {#A}\n" +
-                "      {~s} <li><a href='#detailsPage?id={sn}' data-transition='slide'>{cn} </a></li>{~n}\n" +
-                "    {/A}\n" +
-                "{:else}\n" +
-                "  No Tags!\n" +
-                "{/A}\n" +
-                "{~n}\n" +
-                "{^B}\n" +
-                "  No Likes!\n" +
-                "{:else}\n" +
-                "<li data-role='list-divider'>b</li>" +
-                "    {#B}\n" +
-                "      {~s} <li><a href='#detailsPage?id={sn}' data-transition='slide'>{cn} </a></li>{~n}\n" +
-                "    {/B}\n" +
-                "{/B}" +
-                "{~n}\n" +
-                "{^C}\n" +
-                "  No Likes!\n" +
-                "{:else}\n" +
-                "<li data-role='list-divider'>C</li>" +
-                "    {#C}\n" +
-                "      {~s} <li><a href='#detailsPage?id={sn}' data-transition='slide'>{cn} </a></li>{~n}\n" +
-                "    {/C}\n" +
-                "{/C}";
-                 var source2 =" @foreach (var ltr in alpha)
+	    function displayEmployee(data) {	             
+                 var source ="@foreach (var ltr in alpha)
                  {                    
                        @Html.Raw("{~n}{^")@ltr@Html.Raw("}" );
                        @Html.Raw(" " );
@@ -130,13 +76,13 @@ transform: rotateY(0deg);
                        @Html.Raw("{/"); @ltr  @Html.Raw("}" );
                        @Html.Raw("{/"); @ltr  @Html.Raw("}" );                      
                        @Html.Raw("{~n}" );
-                 } ";    
+                 }";    
 
-	        dust.loadSource(dust.compile(source2, "array"));
+	        dust.loadSource(dust.compile(source, "array"));
 	        dust.render("array", data[0], function (err, out) {
-	            $("#actionList").html(out);
+	            $("[id^='actionList']").html(out);
 	        });
-	        $('#actionList').listview('refresh');
+	        $("[id^='actionList']").listview("refresh");
 	    }
 
 
@@ -144,15 +90,14 @@ transform: rotateY(0deg);
 	    function displayEmployeeDetail(data) {
        
 	        var employee = data.item;
-	        //var source ="{#items}<li><a href='#two?id={id}'><h4>{firstName} {lastName}</h4><p>{title}</p><span class='ui-li-count'>{reportCount}</span></a></li>{/items}";
-	        // $("#actionListTemplate" ).tmpl( employee ).appendTo( "#actionList" );
-	        var source = "<b>{cn} <br/> {sn} </b>";
+	        var source = "<a href='#' data-role='button' data-rel='dialog' id='cnblock' >{cn}</a><a href='#' data-role='button' data-rel='dialog' id='cnmail' >{mail}</a>";
 	        dust.loadSource(dust.compile(source, "replace"));
 	        dust.render("replace", data[0], function (err, out) {
 	            $("#employeeDetails").html(out);
 	        });
-	       // $('#employeeDetails').listview('refresh');
+            $('#cnblock').button();$('#cnmail').button();
 	    }
+
 
 
 	    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,6 +124,52 @@ transform: rotateY(0deg);
 	        return vars;
 	    }
 
+
+
+
+//$( document ).delegate("#mainpage", "pageinit", function() {
+ // alert('A page with an id of "aboutPage" was just created by jQuery Mobile!');
+ // var searchdata = [@Html.Raw(ViewBag.JSON)];
+	//        displayEmployee(searchdata);
+//});
+
+
+
+
+//jQuery("div:jqmData(role='page'):last").bind('pageinit', function(){
+ //   alert("asd");
+ //   var searchdata = [@Html.Raw(ViewBag.JSON)];
+	//        displayEmployee(searchdata);
+//});
+
+//$( document ).delegate("#searchpage", "pagebeforecreate", function() {
+  //alert('A page with an id of "aboutPage" is about to be created by jQuery Mobile!');
+ //   var searchdata = [@Html.Raw(ViewBag.JSON)];
+	// alert(searchdata);
+//	 $("#actionList_searchpage").html("asdasdoutt");
+	//        displayEmployee(searchdata);
+
+//});
+
+
+	  //  $(document).ready(function () {
+	        
+	  //  });
+
+
+      $('#@ViewBag.pageid').live('pagehide', function () {
+    //$(this).remove();
+});
+
+      $( document ).delegate("#searchpage", "pageinit", function() {
+ 
+ $("input[id^='search']").keyup(function () { delay(function(){
+                  ajaxsearch(); }, 500 );            
+             });
+
+});
+
+
  </script>
 </head> 
 
@@ -187,55 +178,35 @@ transform: rotateY(0deg);
 
 
 
-	<div data-role="page" class="type-interior">
+	<div data-role="page" class="type-interior" id="@ViewBag.pageid">
+	  <div data-role="content" id="innercontent">
+      
+       @using (Html.BeginForm("Index", "Search", FormMethod.Get, new { id = "searchform", role = "search", @class = "ui-listview-filter ui-bar-d" }))
+       { 
+         
 
-		<div data-role="header" data-theme="b"  data-id="foo"   >
-	 
-		<a href="../../" data-icon="home" data-iconpos="notext" data-direction="reverse" id="target">Home</a>
-		 <h1>GSU Directory</h1>
-	<span class="ui-btn-right ui-btn  ui-btn-corner-all">
-    <select name="selectcriteria" id="selectcriteria" data-theme="b" data-icon="gear" data-inline="true" data-native-menu="false">
-			<option value="view"></option>
-			<option value="students" selected> Students</option>
-			<option value="fands">Faculty Staff</option>
-			<option value="depts">Departments</option>
-		</select>
-	  
-	</span>
-	  
-	  @*   @using (Html.BeginForm("Index", "Search", FormMethod.Get, new {Id=12345,   @class = "form-stacked" }))
-        { 
-        *@
-         @* Unable to use   data-ajax="false"  in the code so i had to hard code this*@
-           <form  action="/mobile/directory/Search" class="form-stacked" data-ajax="false" name="searchform" id="searchform" method="get">				
-        	   <input type="search" name="fname" id="search" value="@ViewBag.search_terms"  data-theme="d"  autocomplete="off" />
-               <input type="hidden" value="all" name="criteria" id="criteria" />
-           </form>
-          @*   }  *@
-	  </div>
-	
-	  <div data-role="content">
-				@RenderBody()
-		   </div><!--/content-primary -->
-	  </div><!-- /page -->
+           @*     <form  action="/Search"  data-ajax="true" name="searchform" id="searchform" method="get"  role="search" class="ui-listview-filter ui-bar-d">		  *@		
+        	    <input type="search" name="fname" id="search" value="@ViewBag.search_terms"  data-theme="d"  autocomplete="off" class="ui-input-text ui-body-d" data-type="search" placeholder="Search People..." />
+                <input type="hidden" value="all" name="criteria" id="criteria" />
+           @*   </form>	  *@
+          
+       }
+             
+		  @RenderBody()
+	 </div><!--/content-primary -->
+ </div><!-- /page -->
 	
 	
 	
 	
 	
 	<div id="detailsPage" data-role="page" data-add-back-btn="true" >
-
 	        <div data-role="header" data-theme="b">
 		        <h1> Details </h1>
 	        </div>
 
-          <div data-role="content"> 
-
-      	<a href='#' data-role='button' data-rel='dialog' id="employeeDetails" ></a>
-
-
-          
-
+          <div data-role="content"  id="employeeDetails">
+        	
   </div>
 
 </div>

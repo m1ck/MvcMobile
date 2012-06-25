@@ -1,16 +1,22 @@
 ﻿@{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Search";
 }
 
 
-<ul id="actionList" data-role="listview" data-theme="d" data-filter="false" data-dividertheme="c" data-filter-theme="d" data-filter-placeholder="Search">
+ <ul id="actionList" data-role="listview" data-theme="d" data-filter="false" data-dividertheme="c" data-filter-theme="d" data-filter-placeholder="Search friends...">
+					<li data-role="list-divider">Search results</li>
+					<li><a href="#"  data-transition='none'></a></li>
+                  
+                   
+                   @foreach (var post in ViewBag.JSON as Dictionary<string, string>)
+                   {
+                           <li><a href="#detailsPage?id=@post.Value" data-campusid='@post.Value'   data-transition='slide'>  @post.Key </a></li>                     
+                   }
+
+                 
+                   
 </ul>
 
- @ViewBag.search_terms;
 
-<script type="text/javascript">
-	    $(document).ready(function () {
-	        var searchdata = [@Html.Raw(ViewBag.JSON)];
-	        displayEmployee(searchdata);
-	    });
-</script>
+
+
