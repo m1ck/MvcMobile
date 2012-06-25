@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+
+<ul id="actionList" data-role="listview" data-theme="d" data-filter="false" data-dividertheme="c" data-filter-theme="d" data-filter-placeholder="Search">
+</ul>
+
+ @ViewBag.search_terms;
+
+<script type="text/javascript">
+	    $(document).ready(function () {
+	        var searchdata = [@Html.Raw(ViewBag.JSON)];
+	        displayEmployee(searchdata);
+	    });
+</script>
