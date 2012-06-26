@@ -29,8 +29,6 @@ transform: rotateY(0deg);
 	
 	</style> 
 	<script type="text/javascript">
-
-
         var delay = (function(){
             var timer = 0;
             return function(callback, ms){
@@ -45,15 +43,15 @@ transform: rotateY(0deg);
 
 
 	    $(document).ready(function () {
-	        $("input[id^='search']").keyup(function () { delay(function(){
-                  ajaxsearch(); }, 500 );            
+           var initVal="";
+	        $("input[id^='search']").keyup(function () {  initVal = $(this).val(); delay(function(){
+                  ajaxsearch(initVal); }, 500 );            
              });           
 	    });
 
 
-	    function ajaxsearch() {
-	        namelst = $("#search").val();
-	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ namelst +"&sn=", displayEmployee);
+	    function ajaxsearch(initVal) {
+	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ initVal +"&sn=", displayEmployee);
 	    }
 
 
@@ -62,7 +60,12 @@ transform: rotateY(0deg);
 	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person/"+id, displayEmployeeDetail);
 	    });
 
-
+        $( document ).delegate("#searchpage", "pageinit", function() {
+             var initVal="";
+             $("input[id^='search']").keyup(function () {  initVal = $(this).val(); delay(function(){
+                  ajaxsearch(initVal); }, 500 );            
+             }); 
+       });
 
 	    function displayEmployee(data) {	             
                  var source ="@foreach (var ltr in alpha)
@@ -76,19 +79,18 @@ transform: rotateY(0deg);
                        @Html.Raw("{/"); @ltr  @Html.Raw("}" );
                        @Html.Raw("{/"); @ltr  @Html.Raw("}" );                      
                        @Html.Raw("{~n}" );
-                 }";    
+                 }";
 
 	        dust.loadSource(dust.compile(source, "array"));
 	        dust.render("array", data[0], function (err, out) {
 	            $("[id^='actionList']").html(out);
 	        });
-	        $("[id^='actionList']").listview("refresh");
+	        $("[id^='actionList']").listview('refresh');
 	    }
 
 
            
-	    function displayEmployeeDetail(data) {
-       
+	    function displayEmployeeDetail(data) {       
 	        var employee = data.item;
 	        var source = "<a href='#' data-role='button' data-rel='dialog' id='cnblock' >{cn}</a><a href='#' data-role='button' data-rel='dialog' id='cnmail' >{mail}</a>";
 	        dust.loadSource(dust.compile(source, "replace"));
@@ -161,13 +163,7 @@ transform: rotateY(0deg);
     //$(this).remove();
 });
 
-      $( document ).delegate("#searchpage", "pageinit", function() {
  
- $("input[id^='search']").keyup(function () { delay(function(){
-                  ajaxsearch(); }, 500 );            
-             });
-
-});
 
 
  </script>
@@ -200,13 +196,12 @@ transform: rotateY(0deg);
 	
 	
 	
-	<div id="detailsPage" data-role="page" data-add-back-btn="true" >
-	        <div data-role="header" data-theme="b">
-		        <h1> Details </h1>
-	        </div>
+        <div id="detailsPage" data-role="page" data-add-back-btn="true" >
+	                <div data-role="header" data-theme="b">
+		                <h1> Details </h1>
+	                </div>
 
-          <div data-role="content"  id="employeeDetails">
+                   <div data-role="content"  id="employeeDetails">
         	
-  </div>
-
-</div>
+                  </div>
+        </div>

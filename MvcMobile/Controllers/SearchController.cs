@@ -84,7 +84,7 @@ namespace MvcMobile.Controllers
 
         public ActionResult IndexCompleted(Dictionary<string, string> personlist, string search_terms)
         {
-             ViewBag.JSON = personlist;
+            ViewBag.JSON = personlist;
             ViewBag.search_terms = search_terms;
             ViewBag.pageid = "searchpage";
            return View();
