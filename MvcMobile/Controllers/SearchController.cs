@@ -10,21 +10,7 @@ using System.Web.Script.Serialization;
 
 namespace MvcMobile.Controllers
 {
-    public class Person
-    {
-
-        public string givenName { get; set; }
-        public string sn { get; set; }
-        public string cn { get; set; }
-        public string eduPersonPrincipalName { get; set; }
-    
-
-    }
-
-    public class personList
-    {
-        public List<Person> Person { get; set; }
-    }
+   
 
     public class SearchController : AsyncController
     {
@@ -76,9 +62,7 @@ namespace MvcMobile.Controllers
                         });
                   
 
-                });
-                
-               
+                });    
 
         }
 

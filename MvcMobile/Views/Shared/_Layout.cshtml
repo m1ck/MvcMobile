@@ -42,15 +42,48 @@ transform: rotateY(0deg);
 	    });
 
 
+        //initial Auto Search
 	    $(document).ready(function () {
            var initVal="";
-	        $("input[id^='search']").keyup(function () {  initVal = $(this).val(); delay(function(){
-                  ajaxsearch(initVal); }, 500 );            
-             });           
+	         $("input[id^='search']").keyup(function (e) {  initVal = $(this).val(); delay(function(){
+                 if(e.keyCode != 13){  ajaxsearch(initVal,"#searchpagee"); } }, 500 );            
+             });  
+             
+             
+             //intercept form submit
+       $("#searchform").submit(function (e) {
+         alert("do nothtign");
+          e.preventDefault();
+         //transition to the "search results" page, using data from a form with an ID of "search"" 	
+        $.mobile.changePage( "/mobile/directory/Search", {
+	        type: "get",
+	        data: $("form#searchform").serialize()
+        });
+
+         
+         return false;
+
+       }); 
+            
+                    
 	    });
 
 
-	    function ajaxsearch(initVal) {
+        //Auto Search after submit search
+        $(document).delegate("#searchpage", "pageinit", function() {
+             var initVal="";
+             $("input[id^='search']").keyup(function (e) {  initVal = $(this).val(); delay(function(){
+                   if(e.keyCode != 13){  ajaxsearch(initVal,"#searchpagee"); } }, 500 );            
+             }); 
+             //$("searchpage").remove();
+       });
+
+
+       
+
+	    function ajaxsearch(initVal, pagetoremove) {
+           $(pagetoremove).remove(); 
+            //alert(pagetoremove);
 	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ initVal +"&sn=", displayEmployee);
 	    }
 
@@ -60,12 +93,6 @@ transform: rotateY(0deg);
 	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person/"+id, displayEmployeeDetail);
 	    });
 
-        $( document ).delegate("#searchpage", "pageinit", function() {
-             var initVal="";
-             $("input[id^='search']").keyup(function () {  initVal = $(this).val(); delay(function(){
-                  ajaxsearch(initVal); }, 500 );            
-             }); 
-       });
 
 	    function displayEmployee(data) {	             
                  var source ="@foreach (var ltr in alpha)
@@ -181,10 +208,8 @@ transform: rotateY(0deg);
        { 
          
 
-           @*     <form  action="/Search"  data-ajax="true" name="searchform" id="searchform" method="get"  role="search" class="ui-listview-filter ui-bar-d">		  *@		
-        	    <input type="search" name="fname" id="search" value="@ViewBag.search_terms"  data-theme="d"  autocomplete="off" class="ui-input-text ui-body-d" data-type="search" placeholder="Search People..." />
+         	    <input type="search" name="fname" id="search" value="@ViewBag.search_terms"  data-theme="d"  autocomplete="off" class="ui-input-text ui-body-d" data-type="search" placeholder="Search People..." />
                 <input type="hidden" value="all" name="criteria" id="criteria" />
-           @*   </form>	  *@
           
        }
              
@@ -193,7 +218,7 @@ transform: rotateY(0deg);
  </div><!-- /page -->
 	
 	
-	
+	  
 	
 	
         <div id="detailsPage" data-role="page" data-add-back-btn="true" >
