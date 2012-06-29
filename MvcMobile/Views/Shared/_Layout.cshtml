@@ -42,28 +42,26 @@ transform: rotateY(0deg);
 	    });
 
 
-        //initial Auto Search
-	    $(document).ready(function () {
+    //initial Auto Search
+	$(document).ready(function () {
            var initVal="";
 	         $("input[id^='search']").keyup(function (e) {  initVal = $(this).val(); delay(function(){
-                 if(e.keyCode != 13){  ajaxsearch(initVal,"#searchpagee"); } }, 500 );            
+                 if(e.keyCode != 13){  ajaxsearch(initVal); } }, 500 );            
              });  
              
              
              //intercept form submit
-       $("#searchform").submit(function (e) {
-         alert("do nothtign");
-          e.preventDefault();
-         //transition to the "search results" page, using data from a form with an ID of "search"" 	
-        $.mobile.changePage( "/mobile/directory/Search", {
-	        type: "get",
-	        data: $("form#searchform").serialize()
-        });
+               $("#searchform").submit(function (e) {
+                 alert("do nothtign");
+                  e.preventDefault();
+                 //transition to the "search results" page, using data from a form with an ID of "search"" 	
+                                $.mobile.changePage( "/mobile/directory/Search", {
+	                                type: "get",
+	                                data: $("form#searchform").serialize()
+                                });
+                 return false;
 
-         
-         return false;
-
-       }); 
+               }); 
             
                     
 	    });
@@ -73,18 +71,16 @@ transform: rotateY(0deg);
         $(document).delegate("#searchpage", "pageinit", function() {
              var initVal="";
              $("input[id^='search']").keyup(function (e) {  initVal = $(this).val(); delay(function(){
-                   if(e.keyCode != 13){  ajaxsearch(initVal,"#searchpagee"); } }, 500 );            
+                   if(e.keyCode != 13){  ajaxsearch(initVal); } }, 500 );            
              }); 
-             //$("searchpage").remove();
+            
        });
 
 
        
 
-	    function ajaxsearch(initVal, pagetoremove) {
-           $(pagetoremove).remove(); 
-            //alert(pagetoremove);
-	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ initVal +"&sn=", displayEmployee);
+	    function ajaxsearch(initVal) {
+	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ initVal +"&sn=", displayPerson);
 	    }
 
 
@@ -94,7 +90,7 @@ transform: rotateY(0deg);
 	    });
 
 
-	    function displayEmployee(data) {	             
+	    function displayPerson(data) {	             
                  var source ="@foreach (var ltr in alpha)
                  {                    
                        @Html.Raw("{~n}{^")@ltr@Html.Raw("}" );
