@@ -44,24 +44,26 @@ transform: rotateY(0deg);
 
     //initial Auto Search
 	$(document).ready(function () {
-           var initVal="";
+
+
+             //intercept form submit
+               $("#searchform").submit(function (e) {  
+                 $.mobile.showPageLoadingMsg();             
+                  e.preventDefault();    
+                  var qu  =    $('#search').val();          
+                  ajaxsearch(qu);  
+                  $('input#search').blur();                         
+                  return false;
+               }); 
+            
+
+
+             var initVal="";
 	         $("input[id^='search']").keyup(function (e) {  initVal = $(this).val(); delay(function(){
                  if(e.keyCode != 13){  ajaxsearch(initVal); } }, 500 );            
              });  
              
              
-             //intercept form submit
-               $("#searchform").submit(function (e) {
-                 alert("do nothtign");
-                  e.preventDefault();
-                 //transition to the "search results" page, using data from a form with an ID of "search"" 	
-                                $.mobile.changePage( "/mobile/directory/Search", {
-	                                type: "get",
-	                                data: $("form#searchform").serialize()
-                                });
-                 return false;
-
-               }); 
             
                     
 	    });
@@ -109,6 +111,7 @@ transform: rotateY(0deg);
 	            $("[id^='actionList']").html(out);
 	        });
 	        $("[id^='actionList']").listview('refresh');
+             $.mobile.hidePageLoadingMsg();  
 	    }
 
 
@@ -124,19 +127,6 @@ transform: rotateY(0deg);
 	    }
 
 
-
-	    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	    function getUrlVars() {
-	        var vars = [], hash;
-	        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-	        for (var i = 0; i < hashes.length; i++) {
-	            hash = hashes[i].split('=');
-	            vars.push(hash[0]);
-	            vars[hash[0]] = hash[1];
-	        }
-	        return vars;
-	    }
-
          ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	    function getUrlVar(url) {
 	        var vars = [], hash;
@@ -148,46 +138,6 @@ transform: rotateY(0deg);
 	        }
 	        return vars;
 	    }
-
-
-
-
-//$( document ).delegate("#mainpage", "pageinit", function() {
- // alert('A page with an id of "aboutPage" was just created by jQuery Mobile!');
- // var searchdata = [@Html.Raw(ViewBag.JSON)];
-	//        displayEmployee(searchdata);
-//});
-
-
-
-
-//jQuery("div:jqmData(role='page'):last").bind('pageinit', function(){
- //   alert("asd");
- //   var searchdata = [@Html.Raw(ViewBag.JSON)];
-	//        displayEmployee(searchdata);
-//});
-
-//$( document ).delegate("#searchpage", "pagebeforecreate", function() {
-  //alert('A page with an id of "aboutPage" is about to be created by jQuery Mobile!');
- //   var searchdata = [@Html.Raw(ViewBag.JSON)];
-	// alert(searchdata);
-//	 $("#actionList_searchpage").html("asdasdoutt");
-	//        displayEmployee(searchdata);
-
-//});
-
-
-	  //  $(document).ready(function () {
-	        
-	  //  });
-
-
-      $('#@ViewBag.pageid').live('pagehide', function () {
-    //$(this).remove();
-});
-
- 
-
 
  </script>
 </head> 
@@ -201,12 +151,11 @@ transform: rotateY(0deg);
 	  <div data-role="content" id="innercontent">
       
        @using (Html.BeginForm("Index", "Search", FormMethod.Get, new { id = "searchform", role = "search", @class = "ui-listview-filter ui-bar-d" }))
-       { 
-         
+       {         
 
-         	    <input type="search" name="fname" id="search" value="@ViewBag.search_terms"  data-theme="d"  autocomplete="off" class="ui-input-text ui-body-d" data-type="search" placeholder="Search People..." />
+         	    <input type="search" name="fname" id="search" value="@ViewBag.search_terms"  data-theme="d"  autocomplete="off" class="ui-input-text ui-body-d" data-type="search" placeholder="Search Campus Directory..." />
                 <input type="hidden" value="all" name="criteria" id="criteria" />
-          
+         
        }
              
 		  @RenderBody()
