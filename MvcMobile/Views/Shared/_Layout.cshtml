@@ -20,6 +20,8 @@
     -webkit-backface-visibility: hidden;
 }
 	
+h1.ff{font:48px 'GillSansRegular','Trebuchet MS', Arial, Helvetica, sans-serif;text-shadow: 2px 1px #fff;text-align:center;letter-spacing:0;color:rgba(0,0,0,.7);margin-top:50px;line-height:84px;padding:0}
+
 	
 	.ui-page * {
 -webkit-transform: rotateY(0deg);
@@ -29,6 +31,7 @@ transform: rotateY(0deg);
 	
 	</style> 
 	<script type="text/javascript">
+        var jqxhr ;
         var delay = (function(){
             var timer = 0;
             return function(callback, ms){
@@ -42,57 +45,8 @@ transform: rotateY(0deg);
 	    });
 
 
-    //initial Auto Search
-	$(document).ready(function () {
-
-
-             //intercept form submit
-               $("#searchform").submit(function (e) {  
-                 $.mobile.showPageLoadingMsg();             
-                  e.preventDefault();    
-                  var qu  =    $('#search').val();          
-                  ajaxsearch(qu);  
-                  $('input#search').blur();                         
-                  return false;
-               }); 
-            
-
-
-             var initVal="";
-	         $("input[id^='search']").keyup(function (e) {  initVal = $(this).val(); delay(function(){
-                 if(e.keyCode != 13){  ajaxsearch(initVal); } }, 500 );            
-             });  
-             
-             
-            
-                    
-	    });
-
-
-        //Auto Search after submit search
-        $(document).delegate("#searchpage", "pageinit", function() {
-             var initVal="";
-             $("input[id^='search']").keyup(function (e) {  initVal = $(this).val(); delay(function(){
-                   if(e.keyCode != 13){  ajaxsearch(initVal); } }, 500 );            
-             }); 
-            
-       });
-
-
-       
-
-	    function ajaxsearch(initVal) {
-	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ initVal +"&sn=", displayPerson);
-	    }
-
-
-	    $('#detailsPage').live('pagebeforeshow', function (event , data) {       
-	        var id = getUrlVar(event.currentTarget.dataset.url)["id"];
-	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person/"+id, displayEmployeeDetail);
-	    });
-
-
-	    function displayPerson(data) {	             
+      //function to format returned values
+      function displayPerson(data) {	             
                  var source ="@foreach (var ltr in alpha)
                  {                    
                        @Html.Raw("{~n}{^")@ltr@Html.Raw("}" );
@@ -115,16 +69,56 @@ transform: rotateY(0deg);
 	    }
 
 
-           
-	    function displayEmployeeDetail(data) {       
+        function displayEmployeeDetail(data) {       
 	        var employee = data.item;
-	        var source = "<a href='#' data-role='button' data-rel='dialog' id='cnblock' >{cn}</a><a href='#' data-role='button' data-rel='dialog' id='cnmail' >{mail}</a>";
+	        var source = "<a href='#' data-role='button' data-rel='dialog' id='cnblock' >{cn}</a>{#mail}<a href='#' data-role='button' data-rel='dialog' id='cnmail' >{mail}</a>{:else} {/mail} ";
 	        dust.loadSource(dust.compile(source, "replace"));
 	        dust.render("replace", data[0], function (err, out) {
 	            $("#employeeDetails").html(out);
 	        });
             $('#cnblock').button();$('#cnmail').button();
 	    }
+
+
+    //initial Auto Search
+	$(document).ready(function () {
+              //submit serarch
+             //intercept form submit
+              $("#searchform").submit(function (e) {  
+                 $.mobile.showPageLoadingMsg();             
+                  e.preventDefault();    
+                  var qu  =    $('#search').val();          
+                  ajaxsearch(qu);  
+                  $('input#search').blur();                         
+                  return false;
+               });             
+
+             //auto search
+             var initVal="";
+	         $("input[id^='search']").keyup(function (e) {  initVal = $(this).val(); delay(function(){
+                 if(e.keyCode != 13){  ajaxsearch(initVal); } }, 500 );            
+             });           
+             
+              //check for footer clicks
+              $("#oas").click(function() {
+                alert("oas.");          
+             });   
+                    
+	    });
+
+       
+
+	    function ajaxsearch(initVal,fcn ) {
+            if( jqxhr != null ) {  jqxhr.abort(); jqxhr = null;}
+	        jqxhr =   $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ initVal +"&sn=", displayPerson);
+	    }
+
+
+	    $('#detailsPage').live('pagebeforeshow', function (event , data) {       
+	        var id = getUrlVar(event.currentTarget.dataset.url)["id"];
+	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person/"+id, displayEmployeeDetail);
+	    });
+	    
 
 
          ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,8 +140,7 @@ transform: rotateY(0deg);
 <body> 
 
 
-
-	<div data-role="page" class="type-interior" id="@ViewBag.pageid">
+<div data-role="page" class="type-interior" id="@ViewBag.pageid">
 	  <div data-role="content" id="innercontent">
       
        @using (Html.BeginForm("Index", "Search", FormMethod.Get, new { id = "searchform", role = "search", @class = "ui-listview-filter ui-bar-d" }))
@@ -159,7 +152,22 @@ transform: rotateY(0deg);
        }
              
 		  @RenderBody()
+          
+        
 	 </div><!--/content-primary -->
+
+
+     <div data-role="footer" data-id="foo1" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#" id="fas" class="ui-btn-active ui-state-persist">Faculty/Staff</a></li>
+				<li><a href="#" id="stu" >Students</a></li>
+				<li><a href="#" id="oas" >Offices & Departments </a></li>
+				
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+
  </div><!-- /page -->
 	
 	
@@ -168,10 +176,12 @@ transform: rotateY(0deg);
 	
         <div id="detailsPage" data-role="page" data-add-back-btn="true" >
 	                <div data-role="header" data-theme="b">
-		                <h1> Details </h1>
+		                  <h1> Details </h1>
 	                </div>
-
-                   <div data-role="content"  id="employeeDetails">
-        	
+                   <div data-role="content"  id="employeeDetails">        	
                   </div>
         </div>
+
+
+     </body>
+</html>
