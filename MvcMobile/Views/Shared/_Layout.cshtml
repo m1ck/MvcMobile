@@ -9,8 +9,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<title>Campus Directory</title> 
-	        <link href="@System.Web.Optimization.BundleTable.Bundles.ResolveBundleUrl("~/Content/css")" rel="stylesheet" type="text/css" />
-           <script src="@System.Web.Optimization.BundleTable.Bundles.ResolveBundleUrl("~/Scripts/js")"></script>
+	       <link href="@System.Web.Optimization.BundleTable.Bundles.ResolveBundleUrl("~/Content/css")" rel="stylesheet" type="text/css" />
+           <script src="@System.Web.Optimization.BundleTable.Bundles.ResolveBundleUrl("~/Scripts/js")" type="text/javascript"></script>
  
  	
     <script src="@Url.Content("~/Scripts/dust-full-0.3.0.min.js")" type="text/javascript"></script>
@@ -20,7 +20,7 @@
     -webkit-backface-visibility: hidden;
 }
 	
-h1.ff{font:48px 'GillSansRegular','Trebuchet MS', Arial, Helvetica, sans-serif;text-shadow: 2px 1px #fff;text-align:center;letter-spacing:0;color:rgba(0,0,0,.7);margin-top:50px;line-height:84px;padding:0}
+h1.ff{font:28px 'GillSansRegular','Trebuchet MS', Arial, Helvetica, sans-serif;text-shadow: 2px 1px #fff;text-align:center;letter-spacing:0;color:rgba(0,0,0,.7);margin-top:60px;line-height:44px;padding:0}
 
 	
 	.ui-page * {
@@ -65,7 +65,7 @@ transform: rotateY(0deg);
 	            $("[id^='actionList']").html(out);
 	        });
 	        $("[id^='actionList']").listview('refresh');
-             $.mobile.hidePageLoadingMsg();  
+             $.mobile.hidePageLoadingMsg();  //close loading gif
 	    }
 
 
@@ -85,7 +85,7 @@ transform: rotateY(0deg);
               //submit serarch
              //intercept form submit
               $("#searchform").submit(function (e) {  
-                 $.mobile.showPageLoadingMsg();             
+                 $.mobile.showPageLoadingMsg();  //start page loading gif            
                   e.preventDefault();    
                   var qu  =    $('#search').val();          
                   ajaxsearch(qu);  
@@ -93,24 +93,44 @@ transform: rotateY(0deg);
                   return false;
                });             
 
-             //auto search
+             //auto type search
              var initVal="";
 	         $("input[id^='search']").keyup(function (e) {  initVal = $(this).val(); delay(function(){
                  if(e.keyCode != 13){  ajaxsearch(initVal); } }, 500 );            
              });           
              
-              //check for footer clicks
-              $("#oas").click(function() {
+         
+            //$('a[rel="nofollow"]')   
+           $('a[rel="nofollow"]').click( function() {  var myID = $(this).attr('id'); alert( "Here's some information."+myID ) } );
+
+             //check for footer clicks faculty and staff
+             $("#fasx").click(function() {
+                $('#criteria').val('f');
                 alert("oas.");          
              });   
+
+
+              //check for footer clicks students
+              $("#stux").click(function() {
+                $('#criteria').val('s');
+                alert("oas.");          
+              });  
+
+
+              //check for footer clicks Offices & Departments
+              $("#oasx").click(function() {
+                 $('#criteria').val('o');
+                 alert("oas.");          
+              });  
                     
 	    });
 
        
 
-	    function ajaxsearch(initVal,fcn ) {
+	    function ajaxsearch(initVal ) {
             if( jqxhr != null ) {  jqxhr.abort(); jqxhr = null;}
-	        jqxhr =   $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ initVal +"&sn=", displayPerson);
+            var sc  =    $('#criteria').val();     
+	        jqxhr =   $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ initVal +"&sn=&sc="+sc, displayPerson);
 	    }
 
 
@@ -159,10 +179,10 @@ transform: rotateY(0deg);
 
      <div data-role="footer" data-id="foo1" data-position="fixed">
 		<div data-role="navbar">
-			<ul>
-				<li><a href="#" id="fas" class="ui-btn-active ui-state-persist">Faculty/Staff</a></li>
-				<li><a href="#" id="stu" >Students</a></li>
-				<li><a href="#" id="oas" >Offices & Departments </a></li>
+			<ul id="uc">
+				<li><a href="#" id="fas" class="ui-btn-active ui-state-persist" rel="nofollow">Faculty/Staff</a></li>
+				<li><a href="#" id="stu" rel="nofollow" >Students</a></li>
+				<li><a href="#" id="oas" rel="nofollow" >Offices & Departments </a></li>
 				
 			</ul>
 		</div><!-- /navbar -->
