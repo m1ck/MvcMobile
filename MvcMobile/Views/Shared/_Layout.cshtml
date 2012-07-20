@@ -1,35 +1,26 @@
 @{
     char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();    
 }
-
 <!DOCTYPE html> 
 <html>
-
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<title>Campus Directory</title> 
 	       <link href="@System.Web.Optimization.BundleTable.Bundles.ResolveBundleUrl("~/Content/css")" rel="stylesheet" type="text/css" />
-           <script src="@System.Web.Optimization.BundleTable.Bundles.ResolveBundleUrl("~/Scripts/js")" type="text/javascript"></script>
+           <script src="@System.Web.Optimization.BundleTable.Bundles.ResolveBundleUrl("~/Scripts/js")" type="text/javascript"></script> 	
+           <script src="@Url.Content("~/Scripts/dust-full-0.3.0.min.js")" type="text/javascript"></script>
  
- 	
-    <script src="@Url.Content("~/Scripts/dust-full-0.3.0.min.js")" type="text/javascript"></script>
-
 <style type="text/css" >
 	.ui-page {
     -webkit-backface-visibility: hidden;
-}
-	
-h1.ff{font:28px 'GillSansRegular','Trebuchet MS', Arial, Helvetica, sans-serif;text-shadow: 2px 1px #fff;text-align:center;letter-spacing:0;color:rgba(0,0,0,.7);margin-top:60px;line-height:44px;padding:0}
-
-	
-	.ui-page * {
--webkit-transform: rotateY(0deg);
--moz-transform: rotateY(0deg);
-transform: rotateY(0deg);
-}
-	
-	</style> 
+    }	
+    h1.ff{font:28px 'GillSansRegular','Trebuchet MS', Arial, Helvetica, sans-serif;text-shadow: 2px 1px #fff;text-align:center;letter-spacing:0;color:rgba(0,0,0,.7);margin-top:60px;line-height:44px;padding:0}	.ui-page * {
+    -webkit-transform: rotateY(0deg);
+    -moz-transform: rotateY(0deg);
+    transform: rotateY(0deg);
+    }	
+</style> 
 	<script type="text/javascript">
         var jqxhr ;
         var delay = (function(){
@@ -54,7 +45,7 @@ transform: rotateY(0deg);
                        @Html.Raw("{:else}" );
                        @Html.Raw("<li data-role='list-divider'>" );@ltr @Html.Raw("</li>" );
                        @Html.Raw("{#"); @ltr  @Html.Raw("}" );
-                       @Html.Raw("{~s} <li><a href='#detailsPage?id={eduPersonPrincipalName}'  data-campusid='{eduPersonPrincipalName}' data-transition='slide'>{cn} </a></li>{~n}" );
+                       @Html.Raw("{~s} <li><a href='#person?id={eduPersonPrincipalName}'  data-campusid='{eduPersonPrincipalName}' data-transition='slide'>{cn} </a></li>{~n}" );
                        @Html.Raw("{/"); @ltr  @Html.Raw("}" );
                        @Html.Raw("{/"); @ltr  @Html.Raw("}" );                      
                        @Html.Raw("{~n}" );
@@ -69,14 +60,22 @@ transform: rotateY(0deg);
 	    }
 
 
-        function displayEmployeeDetail(data) {       
+        function displayPersonDetail(data) {       
 	        var employee = data.item;
-	        var source = "<a href='#' data-role='button' data-rel='dialog' id='cnblock' >{cn}</a>{#mail}<a href='#' data-role='button' data-rel='dialog' id='cnmail' >{mail}</a>{:else} {/mail} ";
+            var source =         " <dl title='Definition list'>"+
+                            	 " <dt> <strong>{cn}</strong></dt> "+
+                                 " <dt> <strong>{edupersonAffiliation} </strong></dt> "+
+                                 " <dt>  {title}</dt> "+
+                                 " <dt>   {ou}</dt> "+
+	                             " </dl>    "+
+	                             " {#mail}<a href='mailto:{mail}' data-role='button' data-rel='dialog' id='mail' >{mail}</a>{:else} {/mail} "+    
+                                 " {#telephoneNumber}<a href='tel:{telephoneNumber}' data-role='button' data-rel='dialog'  id='telephoneNumber' >{telephoneNumber}</a>{:else} {/telephoneNumber}  ";
+
 	        dust.loadSource(dust.compile(source, "replace"));
 	        dust.render("replace", data[0], function (err, out) {
-	            $("#employeeDetails").html(out);
+	            $("#personDetails").html(out);
 	        });
-            $('#cnblock').button();$('#cnmail').button();
+             $('#mail').button();$('#telephoneNumber').button();
 	    }
 
 
@@ -100,43 +99,29 @@ transform: rotateY(0deg);
              });           
              
          
-            //$('a[rel="nofollow"]')   
-           $('a[rel="nofollow"]').click( function() {  var myID = $(this).attr('id'); alert( "Here's some information."+myID ) } );
+            //chagnge search criteria when footer buttons are presssed
+           $('a[rel="nofollow"]').click( function() {
+                 var myID = $(this).attr('id');            
+                 $('#criteria').val(myID);
+                  $.mobile.showPageLoadingMsg();  //start page loading gif 
+                  var qu  =    $('#search').val();          
+                  ajaxsearch(qu); 
+                  } );
 
-             //check for footer clicks faculty and staff
-             $("#fasx").click(function() {
-                $('#criteria').val('f');
-                alert("oas.");          
-             });   
-
-
-              //check for footer clicks students
-              $("#stux").click(function() {
-                $('#criteria').val('s');
-                alert("oas.");          
-              });  
-
-
-              //check for footer clicks Offices & Departments
-              $("#oasx").click(function() {
-                 $('#criteria').val('o');
-                 alert("oas.");          
-              });  
-                    
 	    });
 
        
 
-	    function ajaxsearch(initVal ) {
+	    function ajaxsearch(initVal ) { 
             if( jqxhr != null ) {  jqxhr.abort(); jqxhr = null;}
             var sc  =    $('#criteria').val();     
 	        jqxhr =   $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ initVal +"&sn=&sc="+sc, displayPerson);
 	    }
 
 
-	    $('#detailsPage').live('pagebeforeshow', function (event , data) {       
+	    $('#person').live('pagebeforeshow', function (event , data) {       
 	        var id = getUrlVar(event.currentTarget.dataset.url)["id"];
-	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person/"+id, displayEmployeeDetail);
+	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person/"+id, displayPersonDetail);
 	    });
 	    
 
@@ -154,25 +139,18 @@ transform: rotateY(0deg);
 	    }
 
  </script>
-</head> 
-
-	
+</head> 	
 <body> 
-
-
 <div data-role="page" class="type-interior" id="@ViewBag.pageid">
 	  <div data-role="content" id="innercontent">
       
        @using (Html.BeginForm("Index", "Search", FormMethod.Get, new { id = "searchform", role = "search", @class = "ui-listview-filter ui-bar-d" }))
        {         
-
-         	    <input type="search" name="fname" id="search" value="@ViewBag.search_terms"  data-theme="d"  autocomplete="off" class="ui-input-text ui-body-d" data-type="search" placeholder="Search Campus Directory..." />
-                <input type="hidden" value="all" name="criteria" id="criteria" />
+                 <input type="search" name="fname" id="search" value="@ViewBag.search_terms"  data-theme="d"  autocomplete="off" class="ui-input-text ui-body-d" data-type="search" placeholder="Search Campus Directory..." />
+                <input type="hidden" value="fas" name="criteria" id="criteria" />
          
-       }
-             
-		  @RenderBody()
-          
+       }             
+	  @RenderBody()          
         
 	 </div><!--/content-primary -->
 
@@ -190,18 +168,15 @@ transform: rotateY(0deg);
 
  </div><!-- /page -->
 	
-	
 	  
 	
 	
-        <div id="detailsPage" data-role="page" data-add-back-btn="true" >
+        <div id="person" data-role="page" data-add-back-btn="true" >
 	                <div data-role="header" data-theme="b">
 		                  <h1> Details </h1>
 	                </div>
-                   <div data-role="content"  id="employeeDetails">        	
-                  </div>
+                   <div data-role="content"  id="personDetails">        	
+                   </div>
         </div>
-
-
      </body>
 </html>
