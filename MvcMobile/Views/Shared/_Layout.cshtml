@@ -37,26 +37,14 @@
 
 
       //function to format returned values
-      function displayPerson(data) {	             
-                 var source ="@foreach (var ltr in alpha)
-                 {                    
-                       @Html.Raw("{~n}{^")@ltr@Html.Raw("}" );
-                       @Html.Raw(" " );
-                       @Html.Raw("{:else}" );
-                       @Html.Raw("<li data-role='list-divider'>" );@ltr @Html.Raw("</li>" );
-                       @Html.Raw("{#"); @ltr  @Html.Raw("}" );
-                       @Html.Raw("{~s} <li><a href='#person?id={eduPersonPrincipalName}'  data-campusid='{eduPersonPrincipalName}' data-transition='slide'>{cn} </a></li>{~n}" );
-                       @Html.Raw("{/"); @ltr  @Html.Raw("}" );
-                       @Html.Raw("{/"); @ltr  @Html.Raw("}" );                      
-                       @Html.Raw("{~n}" );
-                 }";
-
-	        dust.loadSource(dust.compile(source, "array"));
+      function displayPerson(data) {
+            var source = "{#NAMES} <li><a href='#person?id={eduPersonPrincipalName}'  data-campusid='{eduPersonPrincipalName}' data-transition='slide'>{cn} </a></li>{/NAMES}";
+ 	        dust.loadSource(dust.compile(source, "array"));
 	        dust.render("array", data[0], function (err, out) {
 	            $("[id^='actionList']").html(out);
 	        });
 	        $("[id^='actionList']").listview('refresh');
-             $.mobile.hidePageLoadingMsg();  //close loading gif
+              $.mobile.hidePageLoadingMsg();  //close loading gif
 	    }
 
 
