@@ -15,7 +15,8 @@
 	.ui-page {
     -webkit-backface-visibility: hidden;
     }	
-    h1.ff{font:28px 'GillSansRegular','Trebuchet MS', Arial, Helvetica, sans-serif;text-shadow: 2px 1px #fff;text-align:center;letter-spacing:0;color:rgba(0,0,0,.7);margin-top:60px;line-height:44px;padding:0}	.ui-page * {
+    h1.ff{font:28px 'GillSansRegular','Trebuchet MS', Arial, Helvetica, sans-serif;text-shadow: 2px 1px #fff;text-align:center;letter-spacing:0;color:rgba(0,0,0,.7);margin-top:60px;line-height:44px;padding:0}
+	.ui-page * {
     -webkit-transform: rotateY(0deg);
     -moz-transform: rotateY(0deg);
     transform: rotateY(0deg);
@@ -46,6 +47,20 @@
 	        $("[id^='actionList']").listview('refresh');
               $.mobile.hidePageLoadingMsg();  //close loading gif
 	    }
+
+
+
+      //function to format returned values
+      function displayNonPerson(data) {
+          var source = "{#NAMES} <li><a href='#person?id=mick'  data-campusid='{eduPersonPrincipalName}' data-transition='slide'>{cn} </a>  ---- {telephoneNumber}</li>{/NAMES}";
+          dust.loadSource(dust.compile(source, "array"));
+          dust.render("array", data[0], function (err, out) {
+              $("[id^='actionList']").html(out);
+          });
+          $("[id^='actionList']").listview('refresh');
+          $.mobile.hidePageLoadingMsg();  //close loading gif
+      }
+
 
 
         function displayPersonDetail(data) {       
@@ -102,8 +117,12 @@
 
 	    function ajaxsearch(initVal ) { 
             if( jqxhr != null ) {  jqxhr.abort(); jqxhr = null;}
-            var sc  =    $('#criteria').val();     
-	        jqxhr =   $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName="+ initVal +"&sn=&sc="+sc, displayPerson);
+            var sc = $('#criteria').val();
+            if (sc == "oas") {
+                jqxhr = $.getJSON("http://netdevone.gsu.edu/directory/api/Department?cn=" + initVal, displayNonPerson);
+            } else {
+                jqxhr = $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName=" + initVal + "&sn=&sc=" + sc, displayPerson);
+            }
 	    }
 
 
