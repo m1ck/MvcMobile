@@ -52,7 +52,7 @@
 
       //function to format returned values
       function displayNonPerson(data) {
-          var source = "{#NAMES} <li><a href='#person?id=mick'  data-campusid='{eduPersonPrincipalName}' data-transition='slide'>{cn} </a>  ---- {telephoneNumber}</li>{/NAMES}";
+          var source = "{#NAMES} <li>  <fieldset class='ui-grid-a'> <a>{cn} </a> <br><a href='tel:{telephoneNumber}' data-role='button'>{telephoneNumber}</a></fieldset></li>{/NAMES}";
           dust.loadSource(dust.compile(source, "array"));
           dust.render("array", data[0], function (err, out) {
               $("[id^='actionList']").html(out);

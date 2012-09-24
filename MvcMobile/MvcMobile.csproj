@@ -206,7 +206,7 @@
     <Content Include="Views\Search\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\PublishProfiles\{Some Friendly Name that makes sense to you}.pubxml" />
+    <None Include="Properties\PublishProfiles\mobile.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
