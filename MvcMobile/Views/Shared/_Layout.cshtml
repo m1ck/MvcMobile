@@ -103,7 +103,8 @@
              
          
             //chagnge search criteria when footer buttons are presssed
-           $('a[rel="nofollow"]').click( function() {
+	         $('a[rel="nofollow"]').click(function () {
+	             $(this).toggleClass('ui-btn-active', true);
                  var myID = $(this).attr('id');            
                  $('#criteria').val(myID);
                   $.mobile.showPageLoadingMsg();  //start page loading gif 
@@ -115,18 +116,26 @@
 
        
 
-	    function ajaxsearch(initVal ) { 
-            if( jqxhr != null ) {  jqxhr.abort(); jqxhr = null;}
-            var sc = $('#criteria').val();
-            if (sc == "oas") {
-                jqxhr = $.getJSON("http://netdevone.gsu.edu/directory/api/Department?cn=" + initVal, displayNonPerson);
-            } else {
-                jqxhr = $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName=" + initVal + "&sn=&sc=" + sc, displayPerson);
-            }
+	    function ajaxsearch(initVal) {
+	        if (jqxhr != null) { jqxhr.abort(); jqxhr = null; }
+
+	        var substr = initVal.split(/\s+/g)
+	        var lastname = "";
+	        var firstname = substr[0]
+	        if (substr[1])
+	            lastname = substr[1];
+
+	        var sc = $('#criteria').val();
+	        if (sc == "oas") {
+	            jqxhr = $.getJSON("http://netdevone.gsu.edu/directory/api/Department?cn=" + initVal, displayNonPerson);
+	        } else {
+	            jqxhr = $.getJSON("http://netdevone.gsu.edu/directory/api/Person?givenName=" + firstname + "&sn=" + lastname + "&sc=" + sc, displayPerson);
+	        }
 	    }
 
 
-	    $('#person').live('pagebeforeshow', function (event , data) {       
+	    $('#person').live('pagebeforeshow', function (event, data) {
+	        $('#fas').removeClass('ui-state-persist');
 	        var id = getUrlVar(event.currentTarget.dataset.url)["id"];
 	        $.getJSON("http://netdevone.gsu.edu/directory/api/Person/"+id, displayPersonDetail);
 	    });
@@ -165,7 +174,7 @@
      <div data-role="footer" data-id="foo1" data-position="fixed">
 		<div data-role="navbar">
 			<ul id="uc">
-				<li><a href="#" id="fas" class="ui-btn-active ui-state-persist" rel="nofollow">Faculty/Staff</a></li>
+				<li><a href="#" id="fas" class="ui-btn-active" rel="nofollow">Faculty/Staff</a></li>
 				<li><a href="#" id="stu" rel="nofollow" >Students</a></li>
 				<li><a href="#" id="oas" rel="nofollow" >Offices & Departments </a></li>
 				
