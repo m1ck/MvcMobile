@@ -127,9 +127,9 @@
 
 	        var sc = $('#criteria').val();
 	        if (sc == "oas") {
-	            jqxhr = $.getJSON("../directory/api/Department?cn=" + initVal, displayNonPerson);
+	            jqxhr = $.getJSON("../../directory/api/Department?cn=" + initVal, displayNonPerson);
 	        } else {
-	            jqxhr = $.getJSON("../directory/api/Person?givenName=" + firstname + "&sn=" + lastname + "&sc=" + sc, displayPerson);
+	            jqxhr = $.getJSON("../../directory/api/Person?givenName=" + firstname + "&sn=" + lastname + "&sc=" + sc, displayPerson);
 	        }
 	    }
 
@@ -137,7 +137,7 @@
 	    $('#person').live('pagebeforeshow', function (event, data) {
 	        $('#fas').removeClass('ui-state-persist');
 	        var id = getUrlVar(event.currentTarget.dataset.url)["id"];
-	        $.getJSON("../directory/api/Person/"+id, displayPersonDetail);
+	        $.getJSON("../../directory/api/Person/" + id, displayPersonDetail);
 	    });
 	    
 
