@@ -181,6 +181,7 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\dust-full-0.3.0.min.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />
+    <Content Include="Scripts\jquery.mobile-1.2.0.js" />
     <Content Include="Scripts\jquery.mobile-1.2.0.min.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
